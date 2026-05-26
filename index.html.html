@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Love Calculator 💖</title>
+    <style>
+      /* -------------------- Base Reset -------------------- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", "Segoe UI", sans-serif;
+      }
+
+      :root {
+        --bg1: #ff4d8d;
+        --bg2: #7c3aed;
+        --bg3: #ffb347;
+        --card: rgba(255, 255, 255, 0.16);
+        --cardBorder: rgba(255, 255, 255, 0.25);
+        --text: #fff;
+        --muted: rgba(255, 255, 255, 0.85);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+        background-size: 300% 300%;
+        animation: gradientMove 12s ease infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+        padding: 20px;
+        position: relative;
+      }
+
+      /* Animated gradient background */
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* Floating hearts background */
+      .hearts {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+      }
+
+      .heart-float {
+        position: absolute;
+        bottom: -50px;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 24px;
+        animation: floatUp linear infinite;
+        user-select: none;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-110vh) translateX(40px) rotate(360deg)
+            scale(1.4);
+          opacity: 0;
+        }
+      }
+
+      /* Main card */
+      .wrapper {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 460px;
+      }
+
+      .card {
+        position: relative;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        background: var(--card);
+        border: 1px solid var(--cardBorder);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        padding: 28px 24px;
+        overflow: hidden;
+        transform: translateY(0);
+        animation: cardIn 0.8s ease;
+      }
+
+      @keyframes cardIn {
+        from {
+          transform: translateY(25px) scale(0.96);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 4vw, 2.7rem);
+        line-height: 1.1;
+        margin-bottom: 8px;
+        text-align: center;
+        text-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      .subtitle {
+        text-align: center;
+        color: var(--muted);
+        margin-bottom: 22px;
+        font-size: 0.98rem;
+      }
+
+      .form {
+        display: grid;
+        gap: 14px;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #fff;
+      }
+
+      .input-group input {
+        width: 100%;
+        border: none;
+        outline: none;
+        padding: 15px 16px;
+        border-radius: 16px;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transition: 0.25s ease;
+        font-size: 1rem;
+      }
+
+      .input-group input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .input-group input:focus {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 4px;
+      }
+
+      button {
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        border-radius: 16px;
+        padding: 14px 18px;
+        font-size: 1rem;
+        transition: 0.25s ease;
+        flex: 1;
+      }
+
+      .calc-btn {
+        background: linear-gradient(135deg, #ff5ca8, #ff2d6f);
+        color: white;
+        box-shadow: 0 12px 28px rgba(255, 45, 111, 0.35);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .calc-btn:hover {
+        transform: translateY(-2px) scale(1.01);
+        box-shadow: 0 14px 34px rgba(255, 45, 111, 0.45);
+      }
+
+      .reset-btn {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .reset-btn:hover {
+        background: rgba(255, 255, 255, 0.22);
+        transform: translateY(-2px);
+      }
+
+      .mini-note {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      /* Loading overlay */
+      .loading {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 14px;
+        background: rgba(15, 15, 30, 0.18);
+        backdrop-filter: blur(8px);
+        z-index: 5;
+        border-radius: 28px;
+      }
+
+      .spinner {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.22);
+        border-top-color: #fff;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading p {
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+
+      /* Popup result */
+      .result-popup {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(12, 12, 22, 0.35);
+        z-index: 20;
+      }
+
+      .result-box {
+        width: 100%;
+        max-width: 420px;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 28px;
+        padding: 26px 22px;
+        text-align: center;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+        transform: scale(0.7);
+        opacity: 0;
+        animation: popupIn 0.38s ease forwards;
+      }
+
+      @keyframes popupIn {
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .result-heart {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        display: inline-block;
+      }
+
+      .result-title {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+
+      .result-text {
+        font-size: 1.05rem;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: 18px;
+      }
+
+      .close-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #ffffff, #ffd5e5);
+        color: #ff2d6f;
+      }
+
+      /* Heart pulse for 100% */
+      .pulse {
+        animation: pulseHeart 0.8s ease-in-out infinite;
+        transform-origin: center;
+      }
+
+      @keyframes pulseHeart {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.18);
+        }
+      }
+
+      /* Shake for 0% */
+      .shake {
+        animation: shakeCard 0.45s ease-in-out 2;
+      }
+
+      @keyframes shakeCard {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-8px);
+        }
+        40% {
+          transform: translateX(8px);
+        }
+        60% {
+          transform: translateX(-6px);
+        }
+        80% {
+          transform: translateX(6px);
+        }
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 520px) {
+        .card {
+          padding: 24px 18px;
+          border-radius: 24px;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .result-title {
+          font-size: 1.55rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hearts" id="hearts"></div>
+
+    <div class="wrapper">
+      <div class="card" id="mainCard">
+        <div class="badge">💘 Premium Love Vibes ✨</div>
+        <h1>Love Calculator 💞</h1>
+        <p class="subtitle">unoda crush/aalu name potu check paniko bro 👍</p>
+
+        <div class="form">
+          <div class="input-group">
+            <label for="yourName">Your Name</label>
+            <input id="yourName" type="text" placeholder="Type your name..." />
+          </div>
+
+          <div class="input-group">
+            <label for="crushName">Crush Name</label>
+            <input
+              id="crushName"
+              type="text"
+              placeholder="Type crush name..."
+            />
+          </div>
+
+          <div class="actions">
+            <button class="calc-btn" onclick="calculateLove()">
+              Calculate Love ❤️
+            </button>
+            <button class="reset-btn" onclick="resetForm()">Reset</button>
+          </div>
+        </div>
+
+        <p class="mini-note"></p>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Checking cosmic compatibility... 💫</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-popup" id="resultPopup">
+      <div class="result-box" id="resultBox">
+        <div class="result-heart" id="resultHeart">💖</div>
+        <div class="result-title" id="resultTitle"></div>
+        <div class="result-text" id="resultText"></div>
+        <button class="close-btn" onclick="closeResult()">Close</button>
+      </div>
+    </div>
+
+    <script>
+      // -------------------- Floating hearts --------------------
+      const heartsContainer = document.getElementById("hearts");
+      const heartIcons = ["💖", "💗", "💘", "💕", "❤️", "💞"];
+
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart-float";
+        heart.textContent =
+          heartIcons[Math.floor(Math.random() * heartIcons.length)];
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = 6 + Math.random() * 6 + "s";
+        heart.style.fontSize = 18 + Math.random() * 22 + "px";
+        heart.style.opacity = 0.2 + Math.random() * 0.5;
+        heartsContainer.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 12000);
+      }
+
+      for (let i = 0; i < 18; i++) createHeart();
+      setInterval(createHeart, 450);
+
+      // -------------------- Normalization --------------------
+      // Removes spaces, special characters, accents, and converts to lowercase.
+      function normalizeName(name) {
+        return (name || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9\u0B80-\u0BFF]/g, "") // keep Tamil letters + numbers only
+          .trim();
+      }
+
+      // -------------------- Secret match data --------------------
+      const secretYourNames = [
+        "tamil",
+        "tamizharasan",
+        "tamizh",
+        "tamilarasan",
+        "tamilarasan",
+        "tamilarasan",
+        "தமிழரசன்",
+        "தமிழ்",
+        "தமிழரசன்",
+        "தமிழ்அரசன்",
+      ];
+
+      const secretCrushNames = ["mohana", "moganah", "mohanaa", "மோகனா"];
+
+      function isSecretMatch(yourName, crushName) {
+        const y = normalizeName(yourName);
+        const c = normalizeName(crushName);
+
+        const yMatches = [
+          "tamil",
+          "tamizharasan",
+          "tamizh",
+          "tamilarasan",
+          "தமிழரசன்",
+          "தமிழ்",
+          "தமிழ்அரசன்",
+          "tamizh", // extra safe
+          "tamilarasan",
+        ].some((name) => normalizeName(name) === y);
+
+        const cMatches = [
+          "mohana",
+          "moganah",
+          "mohanaa",
+          "மோகனா",
+          "mogana",
+        ].some((name) => normalizeName(name) === c);
+
+        return yMatches && cMatches;
+      }
+
+      // -------------------- Main calculator --------------------
+      function calculateLove() {
+        const yourName = document.getElementById("yourName").value;
+        const crushName = document.getElementById("crushName").value;
+        const loading = document.getElementById("loading");
+        const mainCard = document.getElementById("mainCard");
+
+        if (!yourName.trim() || !crushName.trim()) {
+          showResult(
+            "Oops 😅",
+            "Please enter both names da... காதல் கணக்குக்கு names venum!",
+          );
+          return;
+        }
+
+        loading.style.display = "flex";
+
+        // Fun loading delay for dramatic effect
+        setTimeout(() => {
+          loading.style.display = "none";
+
+          if (isSecretMatch(yourName, crushName)) {
+            showResult(
+              "100% ❤️",
+              "Perfect Match!\nDestiny itself supports this love 😍\nAiyyo semma jodi da! 💫",
+            );
+            document.getElementById("resultHeart").classList.add("pulse");
+            mainCard.classList.remove("shake");
+          } else {
+            showResult(
+              "0% 💔",
+              "sathiyama apdi oru aasa irudha maradhudu bro ",
+            );
+            document.getElementById("resultHeart").classList.remove("pulse");
+            mainCard.classList.add("shake");
+            setTimeout(() => mainCard.classList.remove("shake"), 1000);
+          }
+        }, 1800);
+      }
+
+      // -------------------- Popup handling --------------------
+      function showResult(title, text) {
+        document.getElementById("resultTitle").textContent = title;
+        document.getElementById("resultText").textContent = text;
+        document.getElementById("resultPopup").style.display = "flex";
+        document.getElementById("resultBox").style.animation = "none";
+        void document.getElementById("resultBox").offsetWidth;
+        document.getElementById("resultBox").style.animation =
+          "popupIn 0.38s ease forwards";
+      }
+
+      function closeResult() {
+        document.getElementById("resultPopup").style.display = "none";
+        document.getElementById("resultHeart").classList.remove("pulse");
+      }
+
+      function resetForm() {
+        document.getElementById("yourName").value = "";
+        document.getElementById("crushName").value = "";
+        document.getElementById("resultPopup").style.display = "none";
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("resultHeart").classList.remove("pulse");
+        document.getElementById("mainCard").classList.remove("shake");
+        document.getElementById("yourName").focus();
+      }
+
+      // Close popup when clicking outside the box
+      document
+        .getElementById("resultPopup")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeResult();
+        });
+
+      // Enter key support
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") calculateLove();
+        if (e.key === "Escape") closeResult();
+      });
+    </script>
+  </body>
+</html>
